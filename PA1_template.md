@@ -1,22 +1,41 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r library and directory, echo = FALSE}
+
+```r
 setwd("C:/Users/Owner/Desktop/Repro Research")
 list.files()
-
-library("dplyr")
-library(ggplot2)
 ```
 
-```{r loading and preprocessing, echo = TRUE}
+```
+## [1] "activity.csv"            "Knitr Demo.Rmd"         
+## [3] "Knitr_Demo.html"         "Project1.R"             
+## [5] "R Markdown Demo.Rmd"     "R_Markdown_Demo.html"   
+## [7] "RepData_PeerAssessment1" "Spam.R"
+```
+
+```r
+library("dplyr")
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following object is masked from 'package:stats':
+## 
+##     filter
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+library(ggplot2)
+
 activity = read.csv("activity.csv")
 
 new_activity = na.omit(activity)
