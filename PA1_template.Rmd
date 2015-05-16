@@ -1,73 +1,72 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
+title: 'Reproducible Research: Peer Assessment 1'
+output:
   html_document:
-    keep_md: true
+    keep_md: yes
+  pdf_document: default
 ---
 
-
 ## Loading and preprocessing the data
-
-```{r library and directory, echo = FALSE, message = FALSE}
-setwd("C:/Users/Owner/Desktop/ReproResearch/RepData_PeerAssessment1")
-
-library("dplyr")
-library(ggplot2)
+```{r Setup, echo=TRUE}
+        data<-read.csv("activity.csv" , header=TRUE)
 ```
 
-```{r loading and preprocessing, echo = TRUE}
-activity = read.csv("activity.csv")
-
-new_activity = na.omit(activity)
-
-new_activity <- new_activity[which(new_activity$steps > 0),]
-
-new_activity <- tbl_df(new_activity)
-
-by_date <- group_by(new_activity, date)
-```
 
 
 ## What is mean total number of steps taken per day?
-
-* Calculate the total number of steps taken per day
-* Make a histogram of the total number of steps taken each day
-* Calculate and report the mean and median of the total number of steps taken per day
-
-```{r Sum of Steps, echo = TRUE, results = 'asis'}
-        sum_Results <- summarize(by_date, sum(steps))
-        colnames(sum_Results) <- c("Date", "Steps")
-        knitr::kable(head(sum_Results))
+```{r MEan, echo=TRUE}
+data$date<-as.Date(data$date,format = '%Y-%m-%d')
+total_Steps <-aggregate(steps~date, data=data,sum, na.rm=TRUE)
+head(total_Steps)
+barplot(total_Steps$steps, names.arg =total_Steps$date, main="Number of Steps per Day",xlab="Date", ylab="Steps")
+mean_Steps <- as.integer(mean(total_Steps$steps))
+median_Steps <- median(total_Steps$steps)
 ```
 
+* The mean steps is `r mean_Steps` and the median steps is `r median_Steps`.
 
-```{r Histogram, echo = TRUE, results = 'asis'}
-        hist(sum_Results$Steps, main ="", xlab="Number of Steps taken each Day", ylab = "", breaks = 50)
+## What is the average daily data pattern?
 
+```{r Patter, echo = TRUE}
+steps_Interval <-aggregate(steps~ interval , data=data,mean, na.rm=TRUE)
+plot(steps_Interval$interval, steps_Interval$steps, type="l",xlab="interval",ylab="average steps")
+max_Interval <- steps_Interval[which.max(  
+        steps_Interval$steps),]
 ```
 
+*  The maximum number of steps is `r as.integer(max_Interval[,2])` found at interval `r max_Interval[,1]`.
 
-```{r Mean and Median, echo=TRUE}
-        mean_Results <- as.integer(mean(sum_Results$Steps))
-        median_Results <- median(sum_Results$Steps)
-```
-
-The mean is `r mean_Results` and the median is `r median_Results`.
-
-## What is the average daily activity pattern?
-* Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-* Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-
-
-```{r Daily Activity Pattern}
-
-        by_Interval <- aggregate(steps ~ interval, data = new_activity, FUN =           
-                                         mean  )
-        plot(by_Interval$interval, by_Interval$steps, type = "l")
-```
 
 ## Imputing missing values
+```{r Impute1, echo = TRUE}
+missing_Values <- sum(!complete.cases(activity))
+```
+* The number of missing values in the data is `r missing_Values`.
 
 
+```{r Impute2, echo = TRUE}
+data <- merge(data,steps_Interval, by = "interval", suffixes = c("",".y"))
+missing <- is.na(data$steps)
+data$steps[missing] <- data$steps.y[missing]
+data_new <- data[, c(1:3)]
+steps_per_day<-aggregate(steps ~ date, data_new, sum)
+barplot(steps_per_day$steps, names.arg=steps_per_day$date, xlab="date", ylab="steps", main="Number of steps per day", col="red")
+missing_Mean <- as.integer(mean(steps_per_day$steps))
+missing_Median <- as.integer(median(steps_per_day$steps))
+```
 
-## Are there differences in activity patterns between weekdays and weekends?
+*  The missing value mean is `r missing_Mean` and mising value median is `r missing_Median`. 
+
+
+## Are there differences in data patterns between weekdays and weekends?
+
+```{r Differences, echo = TRUE}
+library(lattice)
+
+data_new$date<-as.Date(data_new$date,format = '%Y-%m-%d')
+data_new$day <- ifelse(weekdays(data_new$date) %in% c("Saturday", "Sunday"),'Weekend','Weekday')
+steps_by_interval_and_Daytype<-aggregate(steps~ interval+day,data_new,FUN="mean")
+xyplot(steps ~ interval | day, steps_by_interval_and_Daytype, layout = c(1, 2), type = "l", col="blue", xlab="Interval", ylab="Average Number of Steps")
+```
+
+*  By observing the graphs we learn that this individual is on average more active on the weekends than on the weekdays. 
