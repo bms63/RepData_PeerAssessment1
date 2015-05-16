@@ -27,6 +27,20 @@ head(total_Steps)
 ```
 
 ```r
+tail(total_Steps)
+```
+
+```
+##          date steps
+## 48 2012-11-24 14478
+## 49 2012-11-25 11834
+## 50 2012-11-26 11162
+## 51 2012-11-27 13646
+## 52 2012-11-28 10183
+## 53 2012-11-29  7047
+```
+
+```r
 barplot(total_Steps$steps, names.arg =total_Steps$date, main="Number of Steps per Day",xlab="Date", ylab="Steps")
 ```
 
@@ -81,8 +95,8 @@ barplot(steps_per_day$steps, names.arg=steps_per_day$date, xlab="date", ylab="st
 missing_Mean <- as.integer(mean(steps_per_day$steps))
 missing_Median <- as.integer(median(steps_per_day$steps))
 ```
-*  The missing value mean is 10766 and mising value median is 10766. 
 
+*  The missing values mean is 10766 and mising values median is 10766. 
 
 
 ## Are there differences in data patterns between weekdays and weekends?
@@ -105,4 +119,4 @@ xyplot(steps ~ interval | day, steps_by_interval_and_Daytype, layout = c(1, 2), 
 
 ![](PA1_template_files/figure-html/Differences-1.png) 
 
-*  By observing the graphs we learn that this individual is more active on the weekend than on the weekdays. 
+*  By observing the graphs we learn that this individual is on average more active on the weekends than on the weekdays. 

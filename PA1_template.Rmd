@@ -18,6 +18,7 @@ output:
 data$date<-as.Date(data$date,format = '%Y-%m-%d')
 total_Steps <-aggregate(steps~date, data=data,sum, na.rm=TRUE)
 head(total_Steps)
+tail(total_Steps)
 barplot(total_Steps$steps, names.arg =total_Steps$date, main="Number of Steps per Day",xlab="Date", ylab="Steps")
 mean_Steps <- as.integer(mean(total_Steps$steps))
 median_Steps <- median(total_Steps$steps)
@@ -55,12 +56,12 @@ missing_Mean <- as.integer(mean(steps_per_day$steps))
 missing_Median <- as.integer(median(steps_per_day$steps))
 ```
 
-*  The missing value mean is `r missing_Mean` and mising value median is `r missing_Median`. 
+*  The missing values mean is `r missing_Mean` and mising values median is `r missing_Median`. 
 
 
 ## Are there differences in data patterns between weekdays and weekends?
 
-```{r Differences, echo = TRUE}
+```{r Differences, echo = TRUE, message=FALSE}
 library(lattice)
 
 data_new$date<-as.Date(data_new$date,format = '%Y-%m-%d')
